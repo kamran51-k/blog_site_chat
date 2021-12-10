@@ -15,3 +15,5 @@ class PostModel(models.Model):
     image = models.ImageField(upload_to='images_uploaded',null=True,blank=True)
     category = models.CharField(max_length=100,null=True,blank=True)
     date = models.DateField(auto_now=True)
+
+

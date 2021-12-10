@@ -14,6 +14,9 @@ def index_view(request):
     context = {}
     post_queryset = PostModel.objects.all()
     context['post_queryset'] = post_queryset
+    
+
+	
     return render(request,'index.html',context)
     
 
@@ -57,3 +60,11 @@ def logout_request(request):
 	logout(request)
 	messages.info(request, "You have successfully logged out.") 
 	return redirect("index_page")
+
+def about_view(request):
+
+	return render(request,'about.html')
+
+def contact_view(request):
+
+	return render(request,'contact.html')

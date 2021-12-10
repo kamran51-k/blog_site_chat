@@ -33,11 +33,11 @@ https://templatemo.com/tm-553-xtra-blog
                         <i class="fas fa-home"></i>
                         Blog Home
                     </a></li>
-                    <li class="tm-nav-item"><a href="about.html" class="tm-nav-link">
+                    <li class="tm-nav-item"><a href="{%url 'about_page' %}" class="tm-nav-link">
                         <i class="fas fa-users"></i>
                         About Xtra
                     </a></li>
-                    <li class="tm-nav-item"><a href="contact.html" class="tm-nav-link">
+                    <li class="tm-nav-item"><a href="{%url 'contact_page' %}" class="tm-nav-link">
                         <i class="far fa-comments"></i>
                         Contact Us
                     </a></li>
@@ -68,12 +68,18 @@ https://templatemo.com/tm-553-xtra-blog
             <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
             </button>
+            {% if user.is_authenticated %}
             <div class="tm-site-header">
-                <div class="mb-3 mx-auto tm-site-logo"><i class="fas fa-times fa-2x"></i></div>            
-                <h1 class="text-center">Xtra Blog</h1>
+                <div class="mb-3 mx-auto tm-site-logo"><i class="fas fa-times fa-2x"></i> <img src="https://www.pngitem.com/pimgs/m/514-5149286_profile-logo-hd-png-download.png" width="100" weight='100'></div>            
+                <h1 class="text-center"><a class="nav-link" href="#">{{user.username}}</a></h1>
             </div>
-            <nav class="tm-nav" id="tm-nav">            
+            <nav class="tm-nav" id="tm-nav">   
+                {% endif %}        
                 <ul>
+                    <li class="tm-nav-item"><a href="{% url 'logout_page' %}" class="tm-nav-link">
+                        <i class="far fa-comments"></i>
+                        Logout
+                    </a></li>
                     <li class="tm-nav-item"><a href="{%url 'index_page' %}" class="tm-nav-link">
                         <i class="fas fa-home"></i>
                         Blog Home
