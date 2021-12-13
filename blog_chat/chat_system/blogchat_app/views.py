@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 
-from blogchat_app.models import PostModel
+from blogchat_app.models import  PostModel, AboutModel
 from .forms import RegisterForm
 from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
@@ -8,17 +8,23 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
-@login_required(login_url='login_page')
+@login_required(login_url = 'login_page')
+# def base_view(request):
+# 	context = {}
+# 	base_queryset = NavbarModel.objects.all()
+# 	logo_queryset = LogoModel.objects.all()
+# 	post_queryset = PostModel.objects.all()
+# 	context['post_queryset'] = post_queryset
+# 	context['logo_queryset'] = logo_queryset
+# 	context['base_queryset'] = base_queryset
+# 	return render(request, 'base.html',context)
 
 def index_view(request):
     context = {}
     post_queryset = PostModel.objects.all()
     context['post_queryset'] = post_queryset
-    
+    return render(request, 'index.html',context)
 
-	
-    return render(request,'index.html',context)
-    
 
 def post_detail_view(request,post_id):
     context = {}
@@ -56,15 +62,23 @@ def login_request(request):
 			messages.error(request,"Invalid username or password.")
 	form = AuthenticationForm()
 	return render(request=request, template_name="login.html", context={"login_form":form})
+
 def logout_request(request):
 	logout(request)
 	messages.info(request, "You have successfully logged out.") 
 	return redirect("index_page")
 
 def about_view(request):
-
-	return render(request,'about.html')
+    context = {}
+    about_queryset = AboutModel.objects.all()
+    context['about_queryset'] = about_queryset
+    return render(request,'about.html',context)
 
 def contact_view(request):
 
 	return render(request,'contact.html')
+
+
+def edit_profile_view(request):
+	
+	return render(request, 'edit_profile.html')
