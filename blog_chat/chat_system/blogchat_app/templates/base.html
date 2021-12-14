@@ -67,7 +67,21 @@ https://templatemo.com/tm-553-xtra-blog
                                 </li>
                 <!-- </a> -->
                 {% endfor%}
-            
+
+                {% for i in contact_queryset_two %}
+                <div class="" style="margin-top: 22px;">
+                    <address class="mb-4 tm-color-gray">
+                        <a href="{{i.adreessurl}}" class="text-white">{{i.adreess}}</a>
+                    </address>
+                    <span class="d-block">
+                        
+                        <a  href="tel:077-640-0708" class="text-white">Tel: +994 {{i.phone_number}}</a>
+                    </span>
+                    <span class="mb-4 d-block">
+                        
+                        <a href="mailto:{{i.email.url}}" class="text-white"> Email: {{i.email}}</a>
+                    </span>
+                {%endfor%}
         </div>
     </header>
 <footer class="row tm-row">

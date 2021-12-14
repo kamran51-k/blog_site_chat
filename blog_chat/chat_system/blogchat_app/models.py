@@ -37,6 +37,9 @@ class AboutModel(models.Model):
 # class ContactModel(models.Model):
 #     d = models.CharField()
 
-# class ContactModel2(models.Model):
-#     active = models.
-#     adreess = models
+class ContactModel2(models.Model):
+    adreess = models.CharField(max_length=100,null=True, blank=True)
+    adreessurl = models.URLField(max_length=100,null=True, blank=True)
+    phone_number = models.IntegerField(null=True, blank=True)
+    email = models.EmailField(max_length=100,null=True, blank=True)
+    short_imf = models.CharField(max_length=100,null=True, blank=True)

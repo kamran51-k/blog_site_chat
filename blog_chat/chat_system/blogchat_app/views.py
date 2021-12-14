@@ -82,3 +82,5 @@ def contact_view(request):
 def edit_profile_view(request):
 	
 	return render(request, 'edit_profile.html')
+
+
