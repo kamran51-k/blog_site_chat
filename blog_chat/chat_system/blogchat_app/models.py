@@ -34,8 +34,13 @@ class AboutModel(models.Model):
     profession = models.CharField(max_length=40,null=True, blank=True)
     small_inf = models.CharField(max_length=100,null=True, blank=True)
 
-# class ContactModel(models.Model):
-#     d = models.CharField()
+class ContactModel(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=100)
+    message = models.CharField(max_length=1000)
+
+    
 
 class ContactModel2(models.Model):
     adreess = models.CharField(max_length=100,null=True, blank=True)
@@ -43,3 +48,17 @@ class ContactModel2(models.Model):
     phone_number = models.IntegerField(null=True, blank=True)
     email = models.EmailField(max_length=100,null=True, blank=True)
     short_imf = models.CharField(max_length=100,null=True, blank=True)
+
+class Comment(models.Model):
+    
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    email = models.EmailField(max_length=100)
+    content = models.TextField()
+    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return 'Comment by {}'.format(self.user)
