@@ -50,15 +50,23 @@ class ContactModel2(models.Model):
     short_imf = models.CharField(max_length=100,null=True, blank=True)
 
 class Comment(models.Model):
-    
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
-    email = models.EmailField(max_length=100)
     content = models.TextField()
     post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-
+    reply_to = models.ForeignKey('self',on_delete=models.CASCADE,related_name='replies',null=True,blank=True)
+         
     class Meta:
         ordering = ('-created',)
 
     def __str__(self):
         return 'Comment by {}'.format(self.user)
+
+    def reply(self):
+        return Comment.objects.filter(reply_to=self)
+
+    @property
+    def is_reply_to(self):
+        if self.reply_to is not None:
+            return False
+        return True

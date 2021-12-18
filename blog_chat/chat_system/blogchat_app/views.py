@@ -1,3 +1,4 @@
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.http import request
 from django.shortcuts import render,redirect,get_object_or_404
 
@@ -29,47 +30,67 @@ def index_view(request):
     return render(request, 'index.html',context)
 
 
-# def post_detail_view(request,post_id):
-#     context = {}
-#     detail_queryset = PostModel.objects.filter(id=post_id).first()
-#     context['detail_queryset'] = detail_queryset
-#     return render(request,'post_detail.html',context)
-
-
+def post_detail_view(request,post_id):
+     context = {}
+     comment_queryset = Comment.objects.filter(post__id=post_id)
+     context['comment_queryset'] = comment_queryset
+     detail_queryset = PostModel.objects.filter(id=post_id).first()
+     context['detail_queryset'] = detail_queryset
+     if request.method == "POST":
+        reply_to_obj = None
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.post = detail_queryset
+            comment.reply_to_id = request.POST.get('reply_to_id')
+            if comment.reply_to_id:
+                reply_qs = Comment.objects.filter(reply_to__id=comment.reply_to_id)
+                if reply_qs.exists() and reply_qs.count() == 1 :
+                    reply_to_obj = reply_qs.first()
+            reply_to = reply_to_obj
+            comment.save()
+            return redirect('detail_page',post_id=post_id)
+     else:
+         form = CommentForm()
+         context['form']=form
+         return render(request,'post_detail.html',context)
+    
+    
 def register_request(request):
-	if request.method == "POST":
-		form = RegisterForm(request.POST)
-		if form.is_valid():
-			user = form.save()
-			login(request, user)
-			messages.success(request, "Registration successful." )
-			return redirect("index_page")
-		messages.error(request, "Unsuccessful registration. Invalid information.")
-	form = RegisterForm()
-	return render (request=request, template_name="register.html", context={"register_form":form})
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful." )
+            return redirect("index_page")
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = RegisterForm()
+    return render (request=request, template_name="register.html", context={"register_form":form})
 
 def login_request(request):
-	if request.method == "POST":
-		form = AuthenticationForm(request, data=request.POST)
-		if form.is_valid():
-			username = form.cleaned_data.get('username')
-			password = form.cleaned_data.get('password')
-			user = authenticate(username=username, password=password)
-			if user is not None:
-				login(request, user)
-				messages.info(request, f"You are now logged in as {username}.")
-				return redirect("index_page")
-			else:
-				messages.error(request,"Invalid username or password.")
-		else:
-			messages.error(request,"Invalid username or password.")
-	form = AuthenticationForm()
-	return render(request=request, template_name="login.html", context={"login_form":form})
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("index_page")
+            else:
+                messages.error(request,"Invalid username or password.")
+        else:
+            messages.error(request,"Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request=request, template_name="login.html", context={"login_form":form})
 
 def logout_request(request):
-	logout(request)
-	messages.info(request, "You have successfully logged out.") 
-	return redirect("index_page")
+    logout(request)
+    messages.info(request, "You have successfully logged out.") 
+    return redirect("index_page")
 
 def about_view(request):
     context = {}
@@ -95,59 +116,18 @@ def contact_view(request):
 
 def my_blog_view(request):
 
-	context = {}
-	my_blog_queryset = PostModel.objects.all()
-	context['my_blog_queryset'] = my_blog_queryset
+    context = {}
+    my_blog_queryset = PostModel.objects.all()
+    context['my_blog_queryset'] = my_blog_queryset
 
     
-	return render(request,'my_blog.html',context)
+    return render(request,'my_blog.html',context)
 def edit_profile_view(request):
-	context = {}
+    context = {}
 
-	return render(request,'edit_profile.html',context)
+    return render(request,'edit_profile.html',context)
 
-                             
-class PostView(DetailView):
-    model = PostModel
-    template_name = "post_detail.html"
+def comment_reply(request):
+    context = {}
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs["pk"]
-        slug = self.kwargs["slug"]
-         
-        form = CommentForm()
-        post = get_object_or_404(PostModel, pk=pk, slug=slug)
-        comments = post.comment_set.all()
-        context['detail_queryset'] = post
-        context['comments'] = comments
-        context['form'] = form
-        
-        return context
-
-    def post(self, request, *args, **kwargs,):
-        form = CommentForm(request.POST)
-        self.object = self.get_object()
-        context = super().get_context_data(**kwargs)
-        post = PostModel.objects.filter(id=self.kwargs['pk'])[0]
-        comments = post.comment_set.all()
-
-        context['detail_queryset'] = post
-        context['comments'] = comments
-        context['form'] = form
-
-        if form.is_valid():
-            user = form.cleaned_data['user']
-            email = form.cleaned_data['email']
-            content = form.cleaned_data['content']
-
-            comment = Comment.objects.create(
-                user=user, email=email, content=content, post=post
-            )
-            print(comments,'DSADSAD')
-            form = CommentForm()
-            context['form'] = form
-            return self.render_to_response(context=context)
-
-        return self.render_to_response(context=context)
-	        
+    return render(request,'comment_reply.html',context)
